@@ -1,0 +1,48 @@
+name: Deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          since_last_remote_commit: true
+          separator: ","
+
+      - name: Copy repository contents via scp
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
+          source: ${{ steps.changed-files.outputs.all_changed_files }}
+          target: "/home/${{ secrets.USERNAME }}/ggle-sheet-manager"
+
+      - name: Executing remote command
+        uses: appleboy/ssh-action@master
+        env:
+          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}  
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          KEY: ${{ secrets.SSH_KEY }}
+          envs: LARGE_SECRET_PASSPHRASE
+          passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
+          script: cd /home/${{ secrets.USERNAME }}/ggle-sheet-manager && chmod +x ./decrypt.sh && ./decrypt.sh && sbt docker:publishLocal && docker stop ggle-sheet-manager && docker run --rm -d -p 9900:9000 --name ggle-sheet-manager ggle-sheet-manager:1.0 && sleep 5 && sbt clean

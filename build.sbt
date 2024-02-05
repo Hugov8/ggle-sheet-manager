@@ -5,6 +5,23 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
+
+import com.typesafe.sbt.packager.docker.DockerChmodType
+import com.typesafe.sbt.packager.docker.DockerPermissionStrategy
+dockerChmodType := DockerChmodType.UserGroupWriteExecute
+dockerPermissionStrategy := DockerPermissionStrategy.CopyChown
+
+Docker / maintainer := "hugovedrine@hotmail.com"
+Docker / packageName := "ggle-sheet-manager"
+Docker / version := "1.0"
+Docker / daemonUserUid  := None
+Docker / daemonUser := "daemon"
+dockerExposedPorts := Seq(9900)
+dockerBaseImage := "openjdk:11-jre-slim"
+dockerRepository := sys.env.get("ecr_repo")
+dockerUpdateLatest := true
+
+
 scalaVersion := "2.13.12"
 
 libraryDependencies += guice

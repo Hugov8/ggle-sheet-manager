@@ -17,6 +17,7 @@ GET     /getLine/:sheetName/:line       controllers.SheetController.getValueCell
 GET     /getColumn/:sheetName/:column   controllers.SheetController.getValueCellsColumn(sheetName: String, column: String)
 GET     /sheetIds                       controllers.SheetController.getSheetIds()
 
+GET      /testToken                     controllers.SheetController.testToken()
 GET     /                               controllers.SheetController.index()
 
 

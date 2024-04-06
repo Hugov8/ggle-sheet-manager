@@ -22,7 +22,7 @@ import service.sheets.SheetsUtil
  * application's home page.
  */
 @Singleton
-class SheetController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class SheetController @Inject()(val authAction: AuthAction, val controllerComponents: ControllerComponents) extends BaseController {
 
   /**
    * Create an Action to render an HTML page.
@@ -31,7 +31,11 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     Ok(views.html.index())
   }
 
-  def share() = Action(parse.json) {
+  def testToken() = authAction {
+    request => Ok(Json.obj("state" -> "Success"))
+  }
+
+  def share() = authAction(parse.json) {
     request => request.body.validate[ShareSpreadsheetInput].fold(
       error => BadRequest(Json.obj("message" -> JsError.toJson(error))),
       input => {
@@ -41,7 +45,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     )
   }
 
-  def generate() = Action(parse.json) {
+  def generate() = authAction(parse.json) {
     request => request.body.validate[GenerateSpreadsheetInput].fold(
       error => BadRequest(Json.obj("message" -> JsError.toJson(error))),
       input => {
@@ -51,7 +55,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     )
   }
 
-  def addSheet() = Action(parse.json) {
+  def addSheet() = authAction(parse.json) {
     request => request.body.validate[AddSheetInput].fold(
       error => BadRequest(Json.obj("message"->JsError.toJson(error))),
       input => {
@@ -61,14 +65,14 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     )
   }
 
-  def getSheetIds() = Action {
+  def getSheetIds() = authAction {
     request => request.headers.get("lienSpreadsheet") match {
       case None => BadRequest(Json.obj("message"->"lienSpreadsheet is missing in headers"))
       case Some(value) => Ok(Json.obj("response"->SheetService.getSheetId(value)))
     } 
   }
 
-  def getValueCell(sheetName: String, cell: String) = Action {
+  def getValueCell(sheetName: String, cell: String) = authAction {
     request => request.headers.get("lienSpreadsheet") match {
       case None => BadRequest(Json.obj("message"->"lienSpreadsheet is missing in headers"))
       case Some(lien) => {
@@ -78,7 +82,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     }
   }
 
-  def getValueCellsLine(sheetName: String, line: Integer) = Action {
+  def getValueCellsLine(sheetName: String, line: Integer) = authAction {
     request => request.headers.get("lienSpreadsheet") match {
       case None => BadRequest(Json.obj("message"->"lienSpreadsheet is missing in headers"))
       case Some(lien) => {
@@ -88,7 +92,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     }
   }
 
-  def getValueCellsColumn(sheetName: String, column: String) = Action {
+  def getValueCellsColumn(sheetName: String, column: String) = authAction {
     request => request.headers.get("lienSpreadsheet") match {
       case None => BadRequest(Json.obj("message"->"lienSpreadsheet is missing in headers"))
       case Some(lien) => {
@@ -98,7 +102,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
     }
   }
 
-  def writeCell() = Action(parse.json) { 
+  def writeCell() = authAction(parse.json) { 
     request => request.body.validate[ModificationSheetInputCell].fold(
         error => BadRequest(Json.obj("message"-> JsError.toJson(error))),
         input => {
@@ -107,7 +111,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
         })
   }
 
-  def writeCellsColumn() = Action(parse.json) { 
+  def writeCellsColumn() = authAction(parse.json) { 
     request => request.body.validate[ModificationSheetInputColumnOrLine].fold(
         error => BadRequest(Json.obj("message"-> JsError.toJson(error))),
         input => {
@@ -116,7 +120,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
         })
   }
 
-  def writeCellsLine() = Action(parse.json) { 
+  def writeCellsLine() = authAction(parse.json) { 
     request => request.body.validate[ModificationSheetInputColumnOrLine].fold(
         error => BadRequest(Json.obj("message"-> JsError.toJson(error))),
         input => {
@@ -125,7 +129,7 @@ class SheetController @Inject()(val controllerComponents: ControllerComponents) 
         })
   }
 
-  def writeCells() = Action(parse.json) { 
+  def writeCells() = authAction(parse.json) { 
     request => request.body.validate[ModificationSheetInputValues].fold(
         error => BadRequest(Json.obj("message"-> JsError.toJson(error))),
         input => {

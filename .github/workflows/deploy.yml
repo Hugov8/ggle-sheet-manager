@@ -38,11 +38,12 @@ jobs:
         uses: appleboy/ssh-action@master
         env:
           LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}  
+          TOKEN_API: ${{ secrets.TOKEN_API }}
         with:
           host: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PORT: ${{ secrets.PORT }}
           KEY: ${{ secrets.SSH_KEY }}
-          envs: LARGE_SECRET_PASSPHRASE
+          envs: LARGE_SECRET_PASSPHRASE, TOKEN_API
           passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
           script: cd /home/${{ secrets.USERNAME }}/ggle-sheet-manager && chmod +x ./decrypt.sh && ./decrypt.sh && sbt docker:publishLocal && docker stop ggle-sheet-manager && docker run --rm -d -p 9900:9000 --name ggle-sheet-manager ggle-sheet-manager:1.0 && sleep 5 && sbt clean

@@ -20,14 +20,12 @@ import com.google.api.services.drive.model.Permission;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback
 import com.google.api.client.http.HttpHeaders
 import com.google.api.client.googleapis.json.GoogleJsonError
-import play.api.Logger
 import com.google.api.services.sheets.v4.Sheets
 import play.api.Logging
 import model.SheetException
 
 
 object DriveUtil {
-    val logger: Logger = Logger(getClass())
     val APPLICATION_NAME: String = "Fuyuki-Generation-Sheet"
 
     def getDriveService: Drive = {
@@ -50,7 +48,7 @@ trait ExecutionBatchGoogle extends Logging {
             case e: GoogleJsonResponseException => {
                 e.getStatusCode() match {
                     case 400 => throw new SheetException(e.getDetails().getMessage())
-                    case 429 => logger.info("Sommeil pendant 60s");Thread.sleep(60_000);execute(batch)
+                    case 429 => logger.info("Google API inactive for 60s");Thread.sleep(60_000);execute(batch)
                     case _ => throw new SheetException(e.getDetails().getMessage())
                 }
             }

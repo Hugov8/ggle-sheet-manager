@@ -15,6 +15,8 @@ class AuthAction @Inject() (val parser: BodyParsers.Default)
                             (implicit val executionContext: ExecutionContext) 
                             extends ActionBuilder[AuthenticatedUser, AnyContent] {
 
+  
+  def logger = Logger(getClass)
   val PASSWORD = sys.env.get("TOKEN_API") match {
         case Some(value) => value
         case None => "key"
@@ -25,7 +27,9 @@ class AuthAction @Inject() (val parser: BodyParsers.Default)
     val password: Option[String] = request.headers.get("token")
     password match {
       case Some(PASSWORD) => block(AuthenticatedUser(PASSWORD, request))
-      case _ => Future.successful(Results.Forbidden(Json.obj("state"->"Authentication failed")))
+      case _ => 
+        logger.info(s"Connexion pour la requete a echoue : $request")
+        Future.successful(Results.Forbidden(Json.obj("state"->"Authentication failed")))
     }
   }
 }

@@ -44,7 +44,7 @@ jobs:
                 echo "✅ Aucun container existant avec ce nom."
                 fi
 
-                echo "Connexion au docker repo"
+                echo "Connexion au docker repo distant $GHCR_TOKEN"
                 echo $GHCR_TOKEN | docker login ghcr.io -u $USERNAME --password-stdin
                 echo "🚀 Démarrage d'un nouveau container $CONTAINER_NAME..."
                 docker run --rm -e TOKEN_API=$TOKEN_API -e APPLICATION_SECRET=$APPLICATION_SECRET -d -p 9900:9000 --name $CONTAINER_NAME  $IMAGE_NAME

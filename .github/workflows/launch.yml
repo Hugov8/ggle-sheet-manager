@@ -40,7 +40,6 @@ jobs:
                 fi
 
                 echo "🚀 Démarrage d'un nouveau container $CONTAINER_NAME..."
-                docker pull $IMAGE_NAME
                 docker run --rm -d -p 9900:9000 --name $CONTAINER_NAME  $IMAGE_NAME
 
 

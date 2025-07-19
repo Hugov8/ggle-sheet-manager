@@ -24,7 +24,7 @@ jobs:
             KEY: ${{ secrets.SSH_KEY }}
             passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
             script: |
-                CONTAINER_NAME=ggle-sheet-manager:1.0
+                CONTAINER_NAME=ggle-sheet-manager
                 # Nom de l'image Docker à utiliser
                 IMAGE_NAME=ghcr.io/hugov8/ggle-sheet-manager:1.0
 

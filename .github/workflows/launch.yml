@@ -17,12 +17,15 @@ jobs:
         
         - name: Executing remote command
           uses: appleboy/ssh-action@master
+          env:
+            TOKEN_API: ${{ secrets.TOKEN_API }}
           with:
             host: ${{ secrets.HOST }}
             USERNAME: ${{ secrets.USERNAME }}
             PORT: ${{ secrets.PORT }}
             KEY: ${{ secrets.SSH_KEY }}
             passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
+            envs: TOKEN_API
             script: |
                 CONTAINER_NAME=ggle-sheet-manager
                 # Nom de l'image Docker à utiliser
@@ -40,6 +43,6 @@ jobs:
                 fi
 
                 echo "🚀 Démarrage d'un nouveau container $CONTAINER_NAME..."
-                docker run --rm -d -p 9900:9000 --name $CONTAINER_NAME  $IMAGE_NAME
+                docker run --rm -e TOKEN_API=$TOKEN_API -d -p 9900:9000 --name $CONTAINER_NAME  $IMAGE_NAME
 
 

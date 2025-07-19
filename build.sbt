@@ -5,8 +5,6 @@ version := "1.0-SNAPSHOT"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-import com.typesafe.sbt.packager.docker._
-import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
 
 import com.typesafe.sbt.packager.docker.DockerChmodType
 import com.typesafe.sbt.packager.docker.DockerPermissionStrategy
@@ -23,13 +21,6 @@ dockerBaseImage := "openjdk:11-jre-slim"
 dockerRepository := sys.env.get("ecr_repo")
 dockerUpdateLatest := true
 
-Docker / dockerCommands ++= {
-  val token = sys.env.getOrElse("TOKEN_API", "")
-  if (token.nonEmpty)
-    Seq(Cmd("ENV", s"TOKEN_API=$token"))
-  else
-    Seq()
-}
 
 scalaVersion := "2.13.12"
 

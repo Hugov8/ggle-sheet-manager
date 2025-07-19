@@ -11,3 +11,4 @@ target
 /.metals
 /.vscode
 /RUNNING_PID
+conf/ressources/*.json

@@ -20,13 +20,14 @@ jobs:
           env:
             TOKEN_API: ${{ secrets.TOKEN_API }}
             APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET }}
+            GHCR_TOKEN: ${{ secrets.REPO_TOKEN }}
           with:
             host: ${{ secrets.HOST }}
             USERNAME: ${{ secrets.USERNAME }}
             PORT: ${{ secrets.PORT }}
             KEY: ${{ secrets.SSH_KEY }}
             passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
-            envs: TOKEN_API, APPLICATION_SECRET
+            envs: TOKEN_API, APPLICATION_SECRET, GHCR_TOKEN
             script: |
                 CONTAINER_NAME=ggle-sheet-manager
                 # Nom de l'image Docker à utiliser
@@ -43,6 +44,8 @@ jobs:
                 echo "✅ Aucun container existant avec ce nom."
                 fi
 
+                echo "Connexion au docker repo"
+                echo $GHCR_TOKEN | docker login ghcr.io -u $USERNAME --password-stdin
                 echo "🚀 Démarrage d'un nouveau container $CONTAINER_NAME..."
                 docker run --rm -e TOKEN_API=$TOKEN_API -e APPLICATION_SECRET=$APPLICATION_SECRET -d -p 9900:9000 --name $CONTAINER_NAME  $IMAGE_NAME
 

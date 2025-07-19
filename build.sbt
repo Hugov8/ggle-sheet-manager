@@ -20,7 +20,6 @@ dockerExposedPorts := Seq(9900)
 dockerBaseImage := "openjdk:11-jre-slim"
 dockerRepository := sys.env.get("ecr_repo")
 dockerUpdateLatest := true
-dockerEnvVars += ("TOKEN_API" -> sys.env.get("TOKEN_API").getOrElse(""))
 
 
 scalaVersion := "2.13.12"

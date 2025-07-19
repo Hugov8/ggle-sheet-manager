@@ -14,5 +14,11 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
+
+    - name: Install sbt
+      uses: coursier/setup-action@v1
+      with:
+        apps: sbt
+        
     - name: Build
       run: sbt clean compile

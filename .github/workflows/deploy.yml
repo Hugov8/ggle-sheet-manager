@@ -13,37 +13,62 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository 
+        uses: actions/checkout@v3
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v35
+      - name: Set up JDK
+        uses: actions/setup-java@v3
         with:
-          since_last_remote_commit: true
-          separator: ","
+          distribution: temurin
+          java-version: 11
 
-      - name: Copy repository contents via scp
-        uses: appleboy/scp-action@master
+      - name: Install sbt
+        uses: coursier/setup-action@v1
         with:
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.PORT }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
-          source: ${{ steps.changed-files.outputs.all_changed_files }}
-          target: "/home/${{ secrets.USERNAME }}/ggle-sheet-manager"
+          apps: sbt
 
-      - name: Executing remote command
-        uses: appleboy/ssh-action@master
+      - name: Cache SBT
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.ivy2/cache
+            ~/.sbt
+            ~/.coursier
+          key: sbt-cache-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            sbt-cache-${{ runner.os }}-
+
+      - name: Login to github container repository
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image name
+        id: image-name
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:1.0
+          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME=$IMAGE_NAME_LOWER" >> $GITHUB_ENV
+
+      - name: Build Docker image using SBT
         env:
-          LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}  
-          TOKEN_API: ${{ secrets.TOKEN_API }}
-        with:
-          host: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          KEY: ${{ secrets.SSH_KEY }}
-          envs: LARGE_SECRET_PASSPHRASE, TOKEN_API
-          passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
-          script: cd /home/${{ secrets.USERNAME }}/ggle-sheet-manager && chmod +x ./decrypt.sh && ./decrypt.sh && sbt docker:publishLocal && docker stop ggle-sheet-manager && docker run --rm -d -p 9900:9000 --name ggle-sheet-manager ggle-sheet-manager:1.0 && sleep 5 && sbt clean
+            LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}  
+            TOKEN_API: ${{ secrets.TOKEN_API }}
+        run: chmod 777 ./decrypt.sh && ./decrypt.sh && sbt Docker/publishLocal
+
+      - name: Tag image for GHCR
+        run: |
+          docker tag ggle-sheet-manager:1.0 $IMAGE_NAME
+
+      - name: Push Docker image to GHCR
+        run: |
+          docker push $IMAGE_NAME

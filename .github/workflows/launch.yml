@@ -1,0 +1,44 @@
+name: Launch
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+        - name: Checkout repository 
+          uses: actions/checkout@v3
+        
+        - name: Executing remote command
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.HOST }}
+            USERNAME: ${{ secrets.USERNAME }}
+            PORT: ${{ secrets.PORT }}
+            KEY: ${{ secrets.SSH_KEY }}
+            passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
+            script: |
+                CONTAINER_NAME=ggle-sheet-manager:1.0
+                # Nom de l'image Docker à utiliser
+                IMAGE_NAME=ghcr.io/hugov8/ggle-sheet-manager:1.0
+
+                echo "🔍 Vérification du container existant..."
+                if [ "$(docker ps -aq -f name=^${CONTAINER_NAME}$)" ]; then
+                echo "🛑 Arrêt du container $CONTAINER_NAME..."
+                docker stop $CONTAINER_NAME
+                echo "🧹 Suppression du container $CONTAINER_NAME..."
+                docker rm $CONTAINER_NAME
+                docker rmi $IMAGE_NAME 
+                else
+                echo "✅ Aucun container existant avec ce nom."
+                fi
+
+                echo "🚀 Démarrage d'un nouveau container $CONTAINER_NAME..."
+                docker run --rm -d --name $CONTAINER_NAME -p 9900:9000 $IMAGE_NAME
+

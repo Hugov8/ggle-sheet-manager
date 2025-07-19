@@ -21,12 +21,13 @@ dockerBaseImage := "openjdk:11-jre-slim"
 dockerRepository := sys.env.get("ecr_repo")
 dockerUpdateLatest := true
 
-Docker / dockerEnvVars := {
-  val existing = (Docker / dockerEnvVars).value
+Docker / dockerCommands ++= {
   val token = sys.env.getOrElse("TOKEN_API", "")
-  existing + ("TOKEN_API" -> token)
+  if (token.nonEmpty)
+    Seq(Cmd("ENV", s"TOKEN_API=$token"))
+  else
+    Seq()
 }
-
 
 scalaVersion := "2.13.12"
 

@@ -24,7 +24,7 @@ dockerUpdateLatest := true
 Docker / dockerEnvVars := {
   val existing = (Docker / dockerEnvVars).value
   val token = sys.env.getOrElse("TOKEN_API", "")
-  existing :+ ("TOKEN_API" -> token)
+  existing + ("TOKEN_API" -> token)
 }
 
 

@@ -20,10 +20,10 @@ dockerExposedPorts := Seq(9900)
 dockerBaseImage := "openjdk:11-jre-slim"
 dockerRepository := sys.env.get("ecr_repo")
 dockerUpdateLatest := true
-Docker / dockerEnvVars ++= {
+Docker / dockerEnvVars ++= Def.setting {
   val token = sys.env.getOrElse("TOKEN_API", "")
   Seq("TOKEN_API" -> token)
-}
+}.value
 
 
 scalaVersion := "2.13.12"

@@ -27,7 +27,7 @@ jobs:
             PORT: ${{ secrets.PORT }}
             KEY: ${{ secrets.SSH_KEY }}
             passphrase: ${{ secrets.SSHKEY_PASSPHRASE }}
-            envs: TOKEN_API, APPLICATION_SECRET, GHCR_TOKEN
+            envs: TOKEN_API, APPLICATION_SECRET, GHCR_TOKEN, USERNAME
             script: |
                 CONTAINER_NAME=ggle-sheet-manager
                 # Nom de l'image Docker à utiliser

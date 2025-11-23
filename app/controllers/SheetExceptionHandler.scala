@@ -14,7 +14,7 @@ import play.api.libs.json.Json
 class SheetExceptionHandler extends HttpErrorHandler {
   def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     Future.successful(
-      Status(statusCode)("A client error occurred: " + message)
+      Status(statusCode)(s"A client error occurred: $message with status $statusCode with request : $request")
     )
   }
 

@@ -1,7 +1,7 @@
 name := """sheetUpdateService"""
 organization := "fr.hugov"
 
-version := "1.0-SNAPSHOT"
+version := "2.0"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
@@ -13,7 +13,7 @@ dockerPermissionStrategy := DockerPermissionStrategy.CopyChown
 
 Docker / maintainer := "hugovedrine@hotmail.com"
 Docker / packageName := "ggle-sheet-manager"
-Docker / version := "1.0"
+Docker / version := "2.0"
 Docker / daemonUserUid  := None
 Docker / daemonUser := "daemon"
 dockerExposedPorts := Seq(9900)

@@ -55,19 +55,16 @@ jobs:
       - name: Set image name
         id: image-name
         run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:1.0
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:2.0
           IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
           echo "IMAGE_NAME=$IMAGE_NAME_LOWER" >> $GITHUB_ENV
 
       - name: Build Docker image using SBT
-        env:
-            LARGE_SECRET_PASSPHRASE: ${{ secrets.LARGE_SECRET_PASSPHRASE }}  
-            TOKEN_API: ${{ secrets.TOKEN_API }}
-        run: chmod 777 ./decrypt.sh && ./decrypt.sh && sbt Docker/publishLocal
+        run: sbt Docker/publishLocal
 
       - name: Tag image for GHCR
         run: |
-          docker tag ggle-sheet-manager:1.0 $IMAGE_NAME
+          docker tag ggle-sheet-manager:2.0 $IMAGE_NAME
 
       - name: Push Docker image to GHCR
         run: |

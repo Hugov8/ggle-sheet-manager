@@ -11,11 +11,8 @@ import play.api.libs.json.JsValue
 
 case class AuthenticatedUser[A](val token: String, request: Request[A]) extends WrappedRequest(request)
 
-class AuthAction @Inject() (val parser: BodyParsers.Default)
-                            (implicit val executionContext: ExecutionContext) 
-                            extends ActionBuilder[AuthenticatedUser, AnyContent] {
+class AuthAction @Inject() (val parser: BodyParsers.Default) (implicit val executionContext: ExecutionContext) extends ActionBuilder[AuthenticatedUser, AnyContent] {
 
-  
   def logger = Logger(getClass)
   val PASSWORD = sys.env.get("TOKEN_API") match {
         case Some(value) => value

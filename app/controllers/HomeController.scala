@@ -22,7 +22,7 @@ import service.sheets.SheetsUtil
  * application's home page.
  */
 @Singleton
-class SheetController @Inject()(val authAction: AuthAction, val loggingAction: LoggingAction, val controllerComponents: ControllerComponents) extends BaseController {
+class SheetController @Inject()(val authAction: AuthAction, val jwtTokenAction: JwtTokenPresenceHeaderAction, val loggingAction: LoggingAction, val controllerComponents: ControllerComponents) extends BaseController {
 
   /**
    * Create an Action to render an HTML page.
@@ -31,8 +31,8 @@ class SheetController @Inject()(val authAction: AuthAction, val loggingAction: L
     Ok(views.html.index())
   }
 
-  def testToken() = (loggingAction andThen authAction) {
-    request => Ok(Json.obj("state" -> "Success"))
+  def testToken() = (loggingAction andThen jwtTokenAction) {
+    request => Ok(Json.obj("state" -> s"Success with token ${request.jwtToken}"))
   }
 
   def share() = (loggingAction andThen authAction) (parse.json) {

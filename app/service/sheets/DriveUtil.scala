@@ -19,6 +19,7 @@ import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest
 import com.google.api.services.drive.model.Permission;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback
 import com.google.api.client.http.HttpHeaders
+import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.googleapis.json.GoogleJsonError
 import com.google.api.services.sheets.v4.Sheets
 import play.api.Logging
@@ -28,13 +29,11 @@ import model.SheetException
 object DriveUtil {
     val APPLICATION_NAME: String = "Fuyuki-Generation-Sheet"
 
-    def getDriveService: Drive = {
-        val credential = GoogleAuthorizeUtil.authorize
+    def getDriveService(credential: HttpRequestInitializer): Drive = {
         return new Drive.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), credential).setApplicationName(APPLICATION_NAME).build()
     }
     
-    def getSheetsService: Sheets  = {
-        val credential = GoogleAuthorizeUtil.authorize
+    def getSheetsService(credential: HttpRequestInitializer): Sheets  = {
         return new Sheets.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), credential).setApplicationName(APPLICATION_NAME).build()
     }
 }

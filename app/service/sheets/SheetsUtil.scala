@@ -20,7 +20,7 @@ import service.sheets.model.SheetException
 object SheetsUtil extends ExecutionBatchGoogle {
     val APPLICATION_NAME: String = "Fuyuki-Gestion-Sheet"
     val baseURISheet: String = "https://docs.google.com/spreadsheets/d/"
-    val sheetService: Sheets = DriveUtil.getSheetsService
+    val sheetService: Sheets = DriveUtil.getSheetsService(GoogleAuthorizeUtil.authorize)
 
 
     def addSheet(title: String, spreadsheetId: String) = {

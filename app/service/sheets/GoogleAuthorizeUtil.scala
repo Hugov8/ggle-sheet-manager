@@ -2,6 +2,7 @@ package service.sheets
 
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -43,6 +44,10 @@ object GoogleAuthorizeUtil {
         val scopes: List[String] = Arrays.asList(SheetsScopes.SPREADSHEETS, DriveScopes.DRIVE_FILE);
         val credentials = GoogleCredentials.fromStream(in).createScoped(scopes);
         return new HttpCredentialsAdapter(credentials);
+    }
+
+    def authorizedToken(accessToken: String): Credential = {
+        return new Credential(BearerToken.authorizationHeaderAccessMethod()).setAccessToken(accessToken)
     }
 
     val authorize = authorizeServiceAccount

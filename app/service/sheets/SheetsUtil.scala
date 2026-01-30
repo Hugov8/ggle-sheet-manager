@@ -17,10 +17,10 @@ import com.google.api.services.sheets.v4.model._
 import service.sheets.model.SheetException
 
 
-object SheetsUtil extends ExecutionBatchGoogle {
+class SheetsUtil(val tokenUser: String) extends ExecutionBatchGoogle {
     val APPLICATION_NAME: String = "Fuyuki-Gestion-Sheet"
     val baseURISheet: String = "https://docs.google.com/spreadsheets/d/"
-    val sheetService: Sheets = DriveUtil.getSheetsService(GoogleAuthorizeUtil.authorize)
+    val sheetService: Sheets = DriveUtil.getSheetsService(GoogleAuthorizeUtil.authorizedToken(tokenUser))
 
 
     def addSheet(title: String, spreadsheetId: String) = {
@@ -82,4 +82,8 @@ object SheetsUtil extends ExecutionBatchGoogle {
                 case null => List()
             }
     }
+}
+
+object SheetsUtil {
+    def apply(tokenUser: String): SheetsUtil = new SheetsUtil(tokenUser)
 }

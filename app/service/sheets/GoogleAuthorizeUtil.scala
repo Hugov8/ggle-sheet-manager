@@ -27,29 +27,7 @@ import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.services.drive.DriveScopes
 
 object GoogleAuthorizeUtil {
-    def authorizeUserAccount: Credential = {
-        val in: InputStream = getClass().getClassLoader().getResourceAsStream("ressources/client_secret_oauth.json")
-        val clientSecrets: GoogleClientSecrets = GoogleClientSecrets.load(JacksonFactory.getDefaultInstance(), new InputStreamReader(in));
-
-        val scopes: List[String] = Arrays.asList(SheetsScopes.SPREADSHEETS);
-
-        val flow: GoogleAuthorizationCodeFlow = new GoogleAuthorizationCodeFlow.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), clientSecrets, scopes).setDataStoreFactory(new MemoryDataStoreFactory())
-                .setAccessType("offline").build();
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
-
-    def authorizeServiceAccount: HttpRequestInitializer = {
-        val in: InputStream = getClass().getClassLoader().getResourceAsStream("ressources/client_secret_service.json")
-
-        val scopes: List[String] = Arrays.asList(SheetsScopes.SPREADSHEETS, DriveScopes.DRIVE_FILE);
-        val credentials = GoogleCredentials.fromStream(in).createScoped(scopes);
-        return new HttpCredentialsAdapter(credentials);
-    }
-
     def authorizedToken(accessToken: String): Credential = {
         return new Credential(BearerToken.authorizationHeaderAccessMethod()).setAccessToken(accessToken)
     }
-
-    val authorize = authorizeServiceAccount
-
 }

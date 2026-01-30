@@ -13,9 +13,9 @@ import com.google.api.client.googleapis.json.GoogleJsonError
 import model.SheetException
 
 object SpreadSheetUtil extends ExecutionBatchGoogle with Logging {
-    val credentials = GoogleAuthorizeUtil.authorize
-    val sheetService = DriveUtil.getSheetsService(credentials)
-    def createSpreadSheet(nameSpreadsheet: String): Spreadsheet = {
+    def createSpreadSheet(nameSpreadsheet: String, userToken: String): Spreadsheet = {
+        val credentials = GoogleAuthorizeUtil.authorizedToken(userToken)
+        val sheetService = DriveUtil.getSheetsService(credentials)
         val spreadSheet = new Spreadsheet().setProperties(new SpreadsheetProperties().setTitle(nameSpreadsheet))
         execute(sheetService.spreadsheets().create(spreadSheet)) match {
             case Some(x) => logger.info(s"Spreadsheet créé $x");x
@@ -23,7 +23,8 @@ object SpreadSheetUtil extends ExecutionBatchGoogle with Logging {
         }
     }
 
-    def shareSpreadsheet(idSpreadSheet: String, mail: String) = {
+    def shareSpreadsheet(idSpreadSheet: String, mail: String, userToken: String) = {
+        val credentials = GoogleAuthorizeUtil.authorizedToken(userToken)
         val service: Drive = DriveUtil.getDriveService(credentials)
         val permission: Permission = new Permission().setType("user").setRole("writer").setEmailAddress(mail)
         val batch: BatchRequest = service.batch()

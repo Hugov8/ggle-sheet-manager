@@ -33,9 +33,9 @@ libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0
 
 // Adds additional packages into conf/routes
 // play.sbt.routes.RoutesKeys.routesImport += "fr.hugov.binders._"
-
 //Request dependencies
 libraryDependencies += "io.lemonlabs" %% "scala-uri" % "4.0.3"
+libraryDependencies += ws
 
 //Google sheet dependencies
 libraryDependencies += "com.google.api-client" % "google-api-client" % "2.0.0"

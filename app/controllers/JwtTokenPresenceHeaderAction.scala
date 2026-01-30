@@ -8,11 +8,13 @@ import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.http.MediaType
 import play.api.libs.json.JsValue
+import service.JwtTokenExchangeService
 
 
 case class JwtTokenCookieRequest[A](val jwtToken: String, request: Request[A]) extends WrappedRequest(request)
 
-class JwtTokenPresenceHeaderAction @Inject() (val parser: BodyParsers.Default) (implicit val executionContext: ExecutionContext) extends ActionBuilder[JwtTokenCookieRequest, AnyContent] {
+class JwtTokenPresenceHeaderAction @Inject() (val parser: BodyParsers.Default, val jwtService: JwtTokenExchangeService) (implicit val executionContext: ExecutionContext) 
+    extends ActionBuilder[JwtTokenCookieRequest, AnyContent] {
 
   def logger = Logger(getClass)
 
@@ -20,9 +22,15 @@ class JwtTokenPresenceHeaderAction @Inject() (val parser: BodyParsers.Default) (
                             block: JwtTokenCookieRequest[A] => Future[Result]): Future[Result] = {
     val token: Option[String] = request.cookies.get("JWT").map(_.value);
     token match {
-      case Some(jwtToken) => block(JwtTokenCookieRequest(jwtToken, request))
+      case Some(jwtToken) => jwtService.exchange(jwtToken)
+                                .flatMap(t => block(JwtTokenCookieRequest(t, request)))
+                                .recover {
+                                    case e => 
+                                        logger.warn("JWT invalide", e)
+                                        Results.Forbidden(Json.obj("state"->"Authentication failed"))
+                                }
       case _ => 
-        logger.info(s"Connexion pour la requete a echoue : $request")
+        logger.warn(s"Connexion pour la requete a echoue : $request")
         Future.successful(Results.Forbidden(Json.obj("state"->"Authentication failed")))
     }
   }

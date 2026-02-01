@@ -11,7 +11,7 @@ class JwtTokenExchangeService @Inject() (ws: WSClient, ec: ExecutionContext, con
     val authServiceUrl = config.get[String]("services.oauth.route")
     def exchange(jwt: String): Future[String] = {
         val request: WSRequest = ws.url(authServiceUrl)
-        val complexRequest: WSRequest = request.addCookies(DefaultWSCookie("JWT", jwt))
+        val complexRequest: WSRequest = request.addCookies(DefaultWSCookie("JWT", jwt, None, None, None, true, true))
         return complexRequest.get().map(r => r.body)(ec)
     }
 }

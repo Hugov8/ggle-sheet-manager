@@ -30,7 +30,7 @@ class JwtTokenPresenceHeaderAction @Inject() (val parser: BodyParsers.Default, v
                                         Results.Forbidden(Json.obj("state"->"Authentication failed"))
                                 }
       case _ => 
-        logger.warn(s"Connexion pour la requete a echoue : $request")
+        logger.warn(s"Connexion pour la requete a echoue : $request. Cookies reçu ${request.cookies}")
         Future.successful(Results.Forbidden(Json.obj("state"->"Authentication failed")))
     }
   }

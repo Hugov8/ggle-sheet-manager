@@ -11,9 +11,10 @@ import play.api.Logging
 class JwtTokenExchangeService @Inject() (ws: WSClient, ec: ExecutionContext, config: Configuration) extends Logging {
 
     val authServiceUrl = config.get[String]("services.oauth.route")
+    val cookieName = config.get[String]("services.oauth.jwt.cookie.name")
     def exchange(jwt: String): Future[String] = {
         val request: WSRequest = ws.url(authServiceUrl)
-        val complexRequest: WSRequest = request.addCookies(DefaultWSCookie("ZOLTRAAK_JWT", jwt, None, None, None, true, true))
+        val complexRequest: WSRequest = request.addCookies(DefaultWSCookie(cookieName, jwt, None, None, None, true, true))
         return complexRequest.get().map(r => r.status match {
             case 200 => r.body
             case _: Int => {

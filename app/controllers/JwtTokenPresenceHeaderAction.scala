@@ -20,7 +20,7 @@ class JwtTokenPresenceHeaderAction @Inject() (val parser: BodyParsers.Default, v
 
   override def invokeBlock[A](request: Request[A],
                             block: JwtTokenCookieRequest[A] => Future[Result]): Future[Result] = {
-    val token: Option[String] = request.cookies.get("ZOLTRAAK_JWT").map(_.value);
+    val token: Option[String] = request.cookies.get(jwtService.cookieName).map(_.value);
     token match {
       case Some(jwtToken) => jwtService.exchange(jwtToken)
                                 .flatMap(t => block(JwtTokenCookieRequest(t, request)))

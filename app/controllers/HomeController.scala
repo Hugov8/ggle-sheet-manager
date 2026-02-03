@@ -31,10 +31,6 @@ class SheetController @Inject()(val jwtTokenAction: JwtTokenPresenceHeaderAction
     Ok(views.html.index())
   }
 
-  def testToken() = (loggingAction andThen jwtTokenAction) {
-    request => Ok(Json.obj("state" -> s"Success with token ${request.jwtToken}"))
-  }
-
   def share() = (loggingAction andThen jwtTokenAction) (parse.json) {
     request => request.body.validate[ShareSpreadsheetInput].fold(
       error => BadRequest(Json.obj("message" -> JsError.toJson(error))),

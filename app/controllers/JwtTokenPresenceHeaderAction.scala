@@ -27,11 +27,11 @@ class JwtTokenPresenceHeaderAction @Inject() (val parser: BodyParsers.Default, v
                                 .recover {
                                     case e => 
                                         logger.warn("JWT invalide", e)
-                                        Results.Forbidden(Json.obj("state"->"Authentication failed"))
+                                        Results.Unauthorized(Json.obj("state"->"Authentication failed"))
                                 }
       case _ => 
-        logger.warn(s"Connexion pour la requete a echoue : $request. Cookies reçu ${request.cookies}")
-        Future.successful(Results.Forbidden(Json.obj("state"->"Authentication failed")))
+        logger.warn(s"Connexion pour la requete a echoue : $request")
+        Future.successful(Results.Unauthorized(Json.obj("state"->"Authentication failed")))
     }
   }
 }

@@ -13,11 +13,11 @@ dockerPermissionStrategy := DockerPermissionStrategy.CopyChown
 
 Docker / maintainer := "hugovedrine@hotmail.com"
 Docker / packageName := "ggle-sheet-manager"
-Docker / version := "1.0-arm64"
+Docker / version := "1.1-arm64"
 Docker / daemonUserUid  := None
 Docker / daemonUser := "daemon"
 dockerExposedPorts := Seq(9900)
-dockerBaseImage := "openjdk:11.0.11-jre-slim"
+dockerBaseImage := "eclipse-temurin:11.0.33_10-jre-alpine"
 dockerRepository := sys.env.get("ecr_repo")
 dockerUpdateLatest := true
 

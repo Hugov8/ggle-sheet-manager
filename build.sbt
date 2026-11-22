@@ -17,7 +17,7 @@ Docker / version := "2.1-arm64"
 Docker / daemonUserUid  := None
 Docker / daemonUser := "daemon"
 dockerExposedPorts := Seq(9900)
-dockerBaseImage := "eclipse-temurin:11-jre-alpine"
+dockerBaseImage := "eclipse-temurin:11-jre-jammy"
 dockerRepository := sys.env.get("ecr_repo")
 dockerUpdateLatest := true
 
